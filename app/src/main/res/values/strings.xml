@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Lonely Chat</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="connect_with_nanny">Connect with Nanny</string>
+    <string name="view_text">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since</string>
+    <string name="find_the_be">Find The  Best Nanny</string>
+    <string name="choose_the_">Choose The  Best\u000DNanny</string>
+    <string name="type_your_message">Type your message</string>
+</resources>
