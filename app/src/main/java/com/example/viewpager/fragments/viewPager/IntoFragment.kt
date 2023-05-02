@@ -10,6 +10,7 @@ import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.example.viewpager.R
 import com.example.viewpager.databinding.FragmentIntoBinding
+import com.example.viewpager.fragments.mobileAuth.MobileAuthFragment
 import com.example.viewpager.fragments.chat.ChatMessage
 
 class IntoFragment : Fragment() {
@@ -32,7 +33,7 @@ class IntoFragment : Fragment() {
         setUpViewPager()
         binding.btn.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, ChatMessage()).commit()
+                .replace(R.id.fragment_container, MobileAuthFragment()).commit()
         }
 
     }

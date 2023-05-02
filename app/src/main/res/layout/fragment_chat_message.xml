@@ -47,4 +47,5 @@
         app:layout_constraintEnd_toEndOf="@id/message2"
         />
 
+
 </androidx.constraintlayout.widget.ConstraintLayout>

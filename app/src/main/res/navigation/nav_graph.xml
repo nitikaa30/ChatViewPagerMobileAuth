@@ -1,6 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/nav_graph">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/mobileAuthFragment">
 
+    <fragment
+        android:id="@+id/mobileAuthFragment"
+        android:name="com.example.viewpager.fragments.mobileAuth.MobileAuthFragment"
+        android:label="MobileAuthFragment" >
+        <action
+            android:id="@+id/action_mobileAuthFragment_to_otpFill"
+            app:destination="@id/otpFill" />
+    </fragment>
+    <fragment
+        android:id="@+id/otpFill"
+        android:name="com.example.viewpager.fragments.mobileAuth.OtpFill"
+        android:label="OtpFill" >
+        <action
+            android:id="@+id/action_otpFill_to_chatMessage"
+            app:destination="@id/chatMessage" />
+    </fragment>
+    <fragment
+        android:id="@+id/intoFragment"
+        android:name="com.example.viewpager.fragments.viewPager.IntoFragment"
+        android:label="fragment_into"
+        tools:layout="@layout/fragment_into" >
+        <action
+            android:id="@+id/action_intoFragment_to_mobileAuthFragment"
+            app:destination="@id/mobileAuthFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/chatMessage"
+        android:name="com.example.viewpager.fragments.chat.ChatMessage"
+        android:label="fragment_chat_message"
+        tools:layout="@layout/fragment_chat_message" />
+    <activity
+        android:id="@+id/mainActivity"
+        android:name="com.example.viewpager.MainActivity"
+        android:label="fragment_mobile_auth"
+        tools:layout="@layout/fragment_mobile_auth" />
 </navigation>
