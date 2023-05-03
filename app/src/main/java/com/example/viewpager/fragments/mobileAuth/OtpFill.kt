@@ -26,7 +26,7 @@ import com.google.firebase.auth.PhoneAuthProvider
 import com.mukeshsolanki.OTP_VIEW_TYPE_BORDER
 import com.mukeshsolanki.OtpView
 
-class OtpFill : Fragment() {
+class OtpFill : Fragment(), SmsListener {
     private lateinit var binding: FragmentOtpFillBinding
     private lateinit var auth: FirebaseAuth
     private var verificationId: String? = null
@@ -42,91 +42,29 @@ class OtpFill : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         verificationId = arguments?.getString("verificationId")
+        Log.d("ID",verificationId.toString())
 
         auth = FirebaseAuth.getInstance()
-        binding.otpView.isFocused
-        startSmsRetriever()
 
-        binding.verifyButton.setOnClickListener {
-
-            val otp= binding.otpView.text.toString()
-            val credential = PhoneAuthProvider.getCredential(verificationId.toString(), otp)
-            signInWithCredential(credential)
-        }
-        val otpComposeView = ComposeView(requireContext())
-        otpComposeView.setContent {
-            OtpInput(onOtpTextChange = { otpValue ->
-                Log.d("Actual Value", otpValue)
-            })
-        }
-    }
-    @Composable
-    fun OtpInput(onOtpTextChange: (String) -> Unit) {
-        var otpValue by remember { mutableStateOf("") }
-        OtpView(
-            otpText = otpValue,
-            onOtpTextChange = {
-                otpValue = it
-                Log.d("Actual Value", otpValue)
-                onOtpTextChange(otpValue)
-            },
-            type = OTP_VIEW_TYPE_BORDER,
-            password = true,
-            containerSize = 48.dp,
-            passwordChar = "•",
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        )
-    }
-
-
-
-    private fun startSmsRetriever() {
-        val client = SmsRetriever.getClient(requireActivity() /* context */)
+        val client = SmsRetriever.getClient(requireActivity())
         val task = client.startSmsRetriever()
-        val receiver = SmsBroadcastReceiver{
-                timedOut, otpCode ->
-            // Extract the OTP from the message here
-            val otp = otpCode?.let { extractOtpFromMessage(it) }
-
-            // Autofill the OTP in the text field
-            if (otp != null) {
-                Log.d("OTP",otp)
-                binding.otpView.setText(otp)
-
-            }
-
-            // Verify the OTP automatically
-
-        }
+        val receiver = SmsBroadcastReceiver(this)
         val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
         context?.registerReceiver(receiver, intentFilter)
         task.addOnSuccessListener {
-                Log.d("Success",intentFilter.toString())
+            Log.d("Success",intentFilter.toString())
+            Toast.makeText(context,"Received SMS",Toast.LENGTH_LONG).show()
             // Successfully started the SMS retriever
         }
         task.addOnFailureListener {
-            Toast.makeText(context,"Fail SMS Retrieve",Toast.LENGTH_LONG).show()
-            // Failed to start the SMS retriever
+            Toast.makeText(context,"Failed to start SMS retriever",Toast.LENGTH_LONG).show()
         }
 
-        // Listen for incoming SMS messages
-
-
-    }
-    private fun extractOtpFromMessage(message: String): String {
-        val regex = "((|^)\\d{6})".toRegex()
-        val matchResult = regex.find(message)
-        return matchResult?.value ?: ""
-    }
-    private fun fillOtpFields(otp: String) {
-        // Fill the OTP fields
-        val otpChars = otp.toCharArray()
-
-
-//        binding.otpView.setOtpCompletionListener {
-//            Log.d("Actual Value", it)
-//        }
-
+        binding.verifyButton.setOnClickListener {
+            val otp = binding.otpView.text.toString()
+            val credential = PhoneAuthProvider.getCredential(verificationId.toString(), otp)
+            signInWithCredential(credential)
+        }
     }
     private fun signInWithCredential(credential: PhoneAuthCredential) {
         auth.signInWithCredential(credential)
@@ -154,10 +92,12 @@ class OtpFill : Fragment() {
     private val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
         override fun onVerificationCompleted(credential: PhoneAuthCredential) {
             // Verification successful, sign in with the credential
+            Log.d("Credential",credential.toString())
             signInWithCredential(credential)
         }
 
         override fun onVerificationFailed(exception: FirebaseException) {
+            Log.d("VerifyFail",exception.message.toString())
             Toast.makeText(context,exception.message,Toast.LENGTH_LONG).show()
             // Verification failed
             // ...
@@ -173,6 +113,12 @@ class OtpFill : Fragment() {
         }
     }
 
+    override fun onMessageReceived(otp: String) {
+        binding.otpView.setText(otp)
+        Log.d("OTP4",otp)
+        val credential = PhoneAuthProvider.getCredential(verificationId.toString(), otp)
+        signInWithCredential(credential)
+    }
 
 
 }
